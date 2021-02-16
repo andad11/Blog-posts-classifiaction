@@ -1,5 +1,5 @@
 from datetime import datetime
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, TweetTokenizer
 from import_data import df_blog
 from nltk.stem.porter import PorterStemmer
 from sklearn.preprocessing import MinMaxScaler
@@ -53,7 +53,7 @@ def remove_punctuations(text):
 #%% Stem and tokenize
 
 def stem_and_tokenize(text):
-    words = word_tokenize(text)
+    words = TweetTokenizer(reduce_len=True, strip_handles=True).tokenize(text)
     stemmer = PorterStemmer()
     words = [stemmer.stem(word) for word in words]
     if '!' in  words:
