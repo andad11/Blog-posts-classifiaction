@@ -13,6 +13,7 @@ def create_subset(df, n_rows, column):
         df_list.append(df_subset)
 
     df_subset = pd.concat(df_list, axis = 0)
+    df_subset.reset_index(inplace=True)
     return df_subset
 
 
