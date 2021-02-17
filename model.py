@@ -1,4 +1,3 @@
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
@@ -9,6 +8,7 @@ import numpy as np
 from preprocess import df_blog
 from statistics import mean
 from preprocess import month_dummies_cols
+import time
 
 
 def identity_tokenizer(text):
@@ -34,6 +34,15 @@ def make_prediction(model, X_train, y_train, X_test):
     y_pred = model.predict(X_test)
     return y_pred
 
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        func(*args, **kwargs)
+        end = time.time()
+        print(f'Time elapsed in seconds: {(end - start):.2f}')
+    return wrapper
+
+@measure_time
 def cross_validate(df, X_cols, y_cols, model, n_splits):
     
     kfold = KFold(n_splits= n_splits, shuffle= True, random_state=0)
@@ -50,7 +59,6 @@ def cross_validate(df, X_cols, y_cols, model, n_splits):
     print(f'Mean accuracy score: {mean(accuracy_scores) :.2f}')
     
     return accuracy_scores
-
 
 
 #%%
@@ -78,4 +86,4 @@ if __name__ == '__main__':
     svc = SVC(kernel='linear')
     lgbm = lgb.LGBMClassifier(num_leaves=31, max_depth=8, learning_rate=0.1, n_estimators=100)
 
-    cross_val_score = cross_validate(df=df_blog, X_cols=features, y_cols=targets, model=nb, n_splits=5)
+    cross_val_score = cross_validate(df=df_blog, X_cols=features, y_cols=targets, model=lgbm, n_splits=5)
