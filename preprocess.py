@@ -5,15 +5,12 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.preprocessing import MinMaxScaler
 import string
 from nltk.corpus import stopwords
-
+import pandas as pd
 
 #%% Parse dates
 df_blog.date = df_blog.date.apply(lambda x: x.lower())
 df_blog.date = df_blog.date.str.replace(',,', df_blog.iloc[0,:]['date'])
 
-#%% get months and year
-df_blog['month'] = df_blog.date.apply(lambda x: x.split(',')[1])
-df_blog['year'] = df_blog.date.apply(lambda x: x.split(',')[2])
 
 #%% translate months
 
@@ -33,13 +30,17 @@ month_dict = {'julio' : 'july', 'mai':'may', 'mars':'march', 'juin':'june', 'jui
 
 for key, value in month_dict.items():
     df_blog.date = df_blog.date.str.replace(key, value)
+
 #%%
+df_blog['month'] = df_blog.date.apply(lambda x: x.split(',')[1])
 df_blog['date_dformat'] = df_blog.date.apply(lambda x: datetime.strptime(x, '%d,%B,%Y'))
+month_dummies = pd.get_dummies(df_blog.month, drop_first=True)
+month_dummies_cols = month_dummies.columns.to_list()
+df_blog = pd.concat([df_blog, month_dummies], axis =1)
 
 #%%
 df_blog['contains_URL'] = df_blog['text'].apply(lambda x: 'urlLink' in x)
 df_blog['contains_signs'] = df_blog['text'].apply(lambda x: '&gt;' in x)
-
 
 #%% Remove punctuation
 punct =[]
@@ -72,8 +73,7 @@ df_blog['token'] = df_blog['token'].apply(lambda x: str(x).replace(" s ", " "))
 df_blog['token'] = df_blog['token'].apply(stem_and_tokenize)
 df_blog['token'] = df_blog['token'].apply(lambda list_data: [x for x in list_data if x.isalpha()])
 
-#%% Stopwords
-my_stopwords = set(stopwords.words('english'))
+
 
 #%% Normalize continous features
 def count_letters(word_list):
@@ -90,3 +90,5 @@ scaler = MinMaxScaler()
 df_blog['word_number_norm'] = scaler.fit_transform(df_blog.word_number.values.reshape(-1,1))
 df_blog['mean_letters_per_word_norm'] = scaler.fit_transform(df_blog.mean_letters_per_word.values.reshape(-1,1))
 
+#%% Fileter out posts with no information after preprocess
+df_blog = df_blog[df_blog['word_number'] != 0]

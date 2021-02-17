@@ -1,6 +1,7 @@
 from preprocess import df_blog
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 
 
 #%% Age of users
@@ -43,3 +44,20 @@ fig_gender_topic.add_trace(go.Bar(x = df_men_topic.index, y = df_men_topic.id, n
 fig_gender_topic.add_trace(go.Bar(x = df_women_topic.index, y = df_women_topic.id, name = 'Female'))
 fig_gender_topic.update_layout(title= 'Posts topic cardinality considering gender')
 fig_gender_topic.show()
+
+#%% Check Benford's law
+
+df_blog['first_digit'] = df_blog['word_number'].astype(str).apply(lambda x: x[0])
+df_benford = pd.DataFrame([0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046], columns=['Frequency'])
+df_benford.index +=1
+first_digit = df_blog['first_digit'].value_counts(normalize = True)
+
+fig_benford = go.Figure()
+fig_benford.add_trace(go.Scatter(x = first_digit.index, y = first_digit.values, name = 'Posty z blogów'))
+fig_benford.add_trace(go.Scatter(x = df_benford.index, y= df_benford['Frequency'], name = 'Norma'))
+fig_benford.update_layout(title = "Check Benford's law in number of words per post")
+fig_benford.show()
+
+from sklearn.metrics import mean_absolute_error
+
+mean_absolute_error(df_benford['Frequency'], first_digit)
