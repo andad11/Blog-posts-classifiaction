@@ -14,14 +14,17 @@ import time
 def identity_tokenizer(text):
     return text
 
-def tf_idf_transform(X_train, X_test):
+def tf_idf_transform(X_train, X_test, text_col):
     tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=0.7, min_df=5, ngram_range=(1, 2),
                                        max_features=10000,
                                        tokenizer=identity_tokenizer, lowercase=False)
 
-    tfidf_train = tfidf_vectorizer.fit_transform(X_train['token'].values)
-    tfidf_test = tfidf_vectorizer.transform(X_test['token'].values)
+    tfidf_train = tfidf_vectorizer.fit_transform(X_train[text_col].values)
+    tfidf_test = tfidf_vectorizer.transform(X_test[text_col].values)
     print(f'TF-IDF features: {tfidf_vectorizer.get_feature_names()}')
+
+    non_text_features = X_train.columns.to_list()
+    non_text_features.remove(text_col)
 
     # Merge TF-IDF features with rest of features
     X_train = np.concatenate([tfidf_train.toarray(), X_train[non_text_features].to_numpy()], axis=1)
@@ -51,7 +54,7 @@ def cross_validate(df, X_cols, y_cols, model, n_splits):
     for train, test in kfold.split(df):
         X_train, y_train = df.loc[train, X_cols], df.loc[train, y_cols]
         X_test, y_test = df.loc[test, X_cols], df.loc[test, y_cols]
-        X_train, X_test = tf_idf_transform(X_train, X_test)
+        X_train, X_test = tf_idf_transform(X_train, X_test, text_col='token')
         y_pred = make_prediction(model, X_train = X_train, y_train= y_train, X_test= X_test)
         accuracy_scores.append(accuracy_score(y_test, y_pred))
     
@@ -59,7 +62,6 @@ def cross_validate(df, X_cols, y_cols, model, n_splits):
     print(f'Mean accuracy score: {mean(accuracy_scores) :.2f}')
     
     return accuracy_scores
-
 
 #%%
 #if targets == 'gender':
