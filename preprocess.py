@@ -93,3 +93,7 @@ df_blog['mean_letters_per_word_norm'] = scaler.fit_transform(df_blog.mean_letter
 #%% Fileter out posts with no information after preprocess
 df_blog = df_blog[df_blog['word_number'] != 0]
 df_blog.reset_index(inplace=True, drop = True)
+
+#%% Join for TF-IDF Vectorizer
+
+df_blog['token'] = df_blog['token'].apply(lambda x: ' '.join(x))

@@ -80,12 +80,12 @@ if __name__ == '__main__':
     df = df_blog.copy()
 
     # %%
-    targets = 'topic'
+    targets = 'gender'
     non_text_features = ['word_number_norm', 'mean_letters_per_word_norm'] + month_dummies_cols
-    features = ['token'] + non_text_features
+    features = ['token']
 
     nb = MultinomialNB(0.1)
     svc = SVC(kernel='linear')
     lgbm = lgb.LGBMClassifier(num_leaves=31, max_depth=8, learning_rate=0.1, n_estimators=100)
 
-    cross_val_score = cross_validate(df=df_blog, X_cols=features, y_cols=targets, model=lgbm, n_splits=5)
+    cross_val_score = cross_validate(df=df_blog, X_cols=features, y_cols=targets, model=nb, n_splits=5)
