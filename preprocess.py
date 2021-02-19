@@ -2,9 +2,7 @@ from datetime import datetime
 from nltk.tokenize import word_tokenize, TweetTokenizer
 from import_data import df_blog
 from nltk.stem.porter import PorterStemmer
-from sklearn.preprocessing import MinMaxScaler
 import string
-from nltk.corpus import stopwords
 import pandas as pd
 
 #%% Parse dates
@@ -86,14 +84,9 @@ df_blog['word_number'] = df_blog['token'].apply(len)
 df_blog['mean_letters_per_word'] = df_blog['token'].apply(count_letters)/df_blog['word_number']
 df_blog['mean_letters_per_word'] = df_blog['mean_letters_per_word'].fillna(0)
 
-scaler = MinMaxScaler()
-df_blog['word_number_norm'] = scaler.fit_transform(df_blog.word_number.values.reshape(-1,1))
-df_blog['mean_letters_per_word_norm'] = scaler.fit_transform(df_blog.mean_letters_per_word.values.reshape(-1,1))
-
 #%% Fileter out posts with no information after preprocess
 df_blog = df_blog[df_blog['word_number'] != 0]
 df_blog.reset_index(inplace=True, drop = True)
 
 #%% Join for TF-IDF Vectorizer
-
 df_blog['token'] = df_blog['token'].apply(lambda x: ' '.join(x))

@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     # %%
     targets = 'gender'
-    non_text_features = ['word_number_norm', 'mean_letters_per_word_norm'] + month_dummies_cols
+    non_text_features = ['word_number', 'mean_letters_per_word'] + month_dummies_cols
     features = ['token']
 
     nb = MultinomialNB(0.1)

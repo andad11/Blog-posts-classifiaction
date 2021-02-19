@@ -6,37 +6,53 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+
+#%%
+
+enc = OneHotEncoder(drop='first')
+a = enc.fit_transform(df_blog[['month']])
 
 #%%
 df = df_blog.copy()
 
-# %%
+# %% Choose target and features
 targets = 'gender'
-non_text_features = ['word_number_norm', 'mean_letters_per_word_norm'] + month_dummies_cols
-features = 'token'
+num_features = ['word_number', 'mean_letters_per_word']
+cat_features = ['month']
+text_features = 'token'
+features = num_features + cat_features
+features.append(text_features)
 
-lgbm = lgb.LGBMClassifier(learning_rate=0.1)
-
-#%%
 X_train, X_test, y_train, y_test = train_test_split(df_blog[features], df_blog[targets], test_size=0.2,
                                                     random_state=42)
+#%% Create Pipeline
 
-#%% Pipeline
+num_transformer = Pipeline(steps=[('scaler', MinMaxScaler())])
+cat_transformer = Pipeline(steps=[('scaler', OneHotEncoder())])
+text_transformer = Pipeline(steps=[('tfidf',TfidfVectorizer(lowercase=False))])
 
-pipe = Pipeline([('tfidf',TfidfVectorizer(lowercase=False)), ('nb', MultinomialNB())])
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', num_transformer, num_features),
+        ('cat', cat_transformer, cat_features),
+        ('text', text_transformer, text_features)])
+
+
+pipe = Pipeline([('preprocess',preprocessor), ('nb', MultinomialNB())])
 params = {
-    'tfidf__max_df': (0.6, 0.7, 0.8),
-    'tfidf__min_df': (5,10),
-    'tfidf__max_features': (5000, 10000, 20000),
-    'tfidf__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
+    'preprocess__text__tfidf__max_df': (0.6, 0.7, 0.8),
+    'preprocess__text__tfidf__min_df': (5,10),
+    'preprocess__text__tfidf__max_features': (5000, 10000, 20000),
+    'preprocess__text__tfidf__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
     # 'tfidf__use_idf': (True, False),
     # 'tfidf__norm': ('l1', 'l2'),
     'nb__alpha': (0.1, 0.3, 0.5, 0.8, 1),
 }
 
 
-
-#%%
+#%% Fit Random Search
 cv_search = RandomizedSearchCV(estimator=pipe, param_distributions = params, cv=5, scoring='accuracy', verbose=2,
                                n_iter=20)
 fitted_model = cv_search.fit(X_train, y_train)
