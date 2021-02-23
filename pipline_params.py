@@ -22,3 +22,12 @@ lgbm_params = {
     'subsample': [0.7, 0.8, 0.9],
     'subsample_freq': [20]
     }
+
+tf_idf_params = {
+    'preprocess__text__tfidf__max_df': (0.7, 0.8),
+    'preprocess__text__tfidf__min_df': (5,10),
+    'preprocess__text__tfidf__max_features': (10000, 20000),
+    'preprocess__text__tfidf__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
+}
+
+nb_params = {'model__alpha':[0.1, 0.3, 0.5, 0.8, 1]}
