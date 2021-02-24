@@ -12,7 +12,6 @@ from pipline_params import lgbm_tfidf_best_params, tf_idf_params
 from pipline_params import xgb_params as model_params
 
 
-
 #%%
 df = df_blog.copy()
 
