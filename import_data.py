@@ -18,7 +18,7 @@ def create_subset(df, n_rows, column):
 
 
 #%% Choose subset
-df_blog = create_subset(df_blog, n_rows= 100000, column='gender')
+df_blog = create_subset(df_blog, n_rows= 10000, column='gender')
 
 
 

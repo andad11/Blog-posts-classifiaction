@@ -1,6 +1,6 @@
-from utils import tf_idf_transform, identity_tokenizer
 from preprocess import df_blog, month_dummies_cols
 import lightgbm as lgb
+import xgboost as xgb
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,7 +9,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from pipline_params import lgbm_tfidf_best_params, tf_idf_params
-from pipline_params import lgbm_params as model_params
+from pipline_params import xgb_params as model_params
+
 
 
 #%%
@@ -39,19 +40,19 @@ preprocessor = ColumnTransformer(
         ('text', text_transformer, text_features)])
 
 
-pipe = Pipeline([('preprocess',preprocessor), ('model', lgb.LGBMClassifier(objective='binary'))])
+pipe = Pipeline([('preprocess',preprocessor), ('model', xgb.XGBClassifier(objective='binary:logistic' ))])
 
 #%% Define params
 
 
 new_keys = ['model__'+key for key in model_params.keys()]
-lgbm_params = dict(zip(new_keys, list(model_params.values())))
+model_params = dict(zip(new_keys, list(model_params.values())))
 
-pipline_params = {**tf_idf_params, **lgbm_params}
+pipeline_params = {**tf_idf_params, **model_params}
 
 #%% Fit Random Search
-cv_search = RandomizedSearchCV(estimator=pipe, param_distributions = lgbm_tfidf_best_params, cv=5, scoring='accuracy',
-                               verbose=2, n_iter=4)
+cv_search = RandomizedSearchCV(estimator=pipe, param_distributions = pipeline_params, cv=5, scoring='accuracy',
+                               verbose=2, n_iter=30)
 fitted_model = cv_search.fit(X_train, y_train)
 
 #%%

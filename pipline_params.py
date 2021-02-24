@@ -4,7 +4,7 @@ lgbm_tfidf_best_params = {
   'model__reg_lambda': [1.3],
   'model__reg_alpha': [1.2],
   'model__num_leaves': [50],
-  'model__n_estimators': [1000, 1500, 2000, 3000],
+  'model__n_estimators': [1000],
   'model__min_split_gain': [0.3],
   'model__min_data_in_leaf': [50],
   'model__max_depth': [20],
@@ -30,4 +30,22 @@ tf_idf_params = {
     'preprocess__text__tfidf__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
 }
 
-nb_params = {'model__alpha':[0.1, 0.3, 0.5, 0.8, 1]}
+nb_params = {'alpha':[0.1, 0.3, 0.5, 0.8, 1]}
+
+xgb_params = param_grid = {
+    'n_estimators': [400, 700, 1000],
+    'colsample_bytree': [0.7, 0.8],
+    'max_depth': [10,15,20],
+    'reg_alpha': [1.1, 1.2, 1.3],
+    'reg_lambda': [1.1, 1.2, 1.3],
+    'subsample': [0.7, 0.8, 0.9]
+}
+
+xgb_best_params = {
+    'subsample': [0.8],
+    'reg_lambda': [1.3],
+    'reg_alpha': [1.1],
+    'n_estimators': [400],
+    'max_depth': [15],
+    'colsample_bytree': [0.7]
+}
