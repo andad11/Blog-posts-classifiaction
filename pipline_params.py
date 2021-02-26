@@ -30,7 +30,7 @@ tf_idf_params = {
     'preprocess__text__tfidf__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
 }
 
-nb_params = {'alpha':[0.1, 0.3, 0.5, 0.8, 1]}
+nb_params = {'alpha':[0.1, 0.5, 1]}
 
 xgb_params = param_grid = {
     'n_estimators': [400, 700, 1000],

@@ -1,9 +1,11 @@
 from datetime import datetime
-from nltk.tokenize import word_tokenize, TweetTokenizer
-from import_data import df_blog
-from nltk.stem.porter import PorterStemmer
 import string
+
 import pandas as pd
+from nltk.stem.porter import PorterStemmer
+from nltk.tokenize import word_tokenize, TweetTokenizer
+
+from import_data import df_blog
 
 #%% Parse dates
 df_blog.date = df_blog.date.apply(lambda x: x.lower())

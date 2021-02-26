@@ -1,8 +1,8 @@
-from preprocess import df_blog
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 
+from preprocess import df_blog
 
 #%% Age of users
 px.histogram(data_frame= df_blog, x= 'age').show()
