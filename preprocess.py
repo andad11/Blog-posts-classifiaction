@@ -42,6 +42,9 @@ df_blog = pd.concat([df_blog, month_dummies], axis =1)
 df_blog['contains_URL'] = df_blog['text'].apply(lambda x: 'urlLink' in x)
 df_blog['contains_signs'] = df_blog['text'].apply(lambda x: '&gt;' in x)
 
+#%%
+df_blog['is_male'] = pd.get_dummies(df_blog.gender)['male']
+
 #%% Remove punctuation
 punct =[]
 punct += list(string.punctuation)

@@ -1,7 +1,5 @@
 import lightgbm as lgb
 import xgboost as xgb
-from pipline_params import lgbm_tfidf_best_params, tf_idf_params
-from pipline_params import nb_params as model_params
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score, precision_score, confusion_matrix, recall_score
@@ -11,6 +9,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 from preprocess import df_blog, month_dummies_cols
+from pipline_params import lgbm_tfidf_best_params, tf_idf_params
+from pipline_params import nb_params as model_params
+
 
 #%%
 df = df_blog.copy()
@@ -22,6 +23,7 @@ cat_features = ['month']
 text_features = 'token'
 features = num_features + cat_features
 features.append(text_features)
+
 
 X_train, X_test, y_train, y_test = train_test_split(df_blog[features], df_blog[targets], test_size=0.2,
                                                     random_state=42)
@@ -36,7 +38,8 @@ preprocessor = ColumnTransformer(
     transformers=[
         ('num', num_transformer, num_features),
         ('cat', cat_transformer, cat_features),
-        ('text', text_transformer, text_features)])
+        ('text', text_transformer, text_features)
+    ])
 
 
 pipe = Pipeline([('preprocess',preprocessor), ('model', MultinomialNB())])
